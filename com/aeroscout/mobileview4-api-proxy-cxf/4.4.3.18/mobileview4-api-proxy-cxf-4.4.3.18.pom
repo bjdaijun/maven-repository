@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.aeroscout</groupId>
+  <artifactId>mobileview4-api-proxy-cxf</artifactId>
+  <version>4.4.3.18</version>
+  <description>POM was created from install:install-file</description>
+  <name>mobileview4-api-proxy-cxf</name>
+	<packaging>jar</packaging>
+
+	<properties>
+	  <cxf.version>2.2.6</cxf.version>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxws</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.14</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- TODO: check if i need it!  - Jetty is needed if you're are not using the CXFServlet -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http-jetty</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+			<repository>
+				<id>Public</id>
+				<name>Public</name>
+				<url>http://mv-nexus/content/groups/public</url>
+				<releases>
+					<enabled>true</enabled>
+				</releases>
+				<snapshots>
+					<enabled>true</enabled>
+					<updatePolicy>never</updatePolicy>
+				</snapshots>
+			</repository>
+	</repositories>
+
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>public</id>
+			<name>public</name>
+			<url>http://mv-nexus/content/groups/public</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<build>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-codegen-plugin</artifactId>
+			<version>${cxf.version}</version>
+			<executions>
+				<execution>
+					<id>generate-sources</id>
+					<phase>generate-sources</phase>
+					<configuration>
+						<sourceRoot>${project.build.directory}/generated/cxf</sourceRoot>
+						<wsdlOptions>
+							<wsdlOption>
+								<wsdl>${basedir}/src/main/resources/wsdl/AreaAPIService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/AssetAPIService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/AssetBusinessStatusAPIService</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/CategoryAPIService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/DepartmentAPIService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/EventAPIService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/GroupAPIService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/LocatorAPIService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/PermissionAPIService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/RoleAPIService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/SystemAPIService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/TagAPIService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/UserAPIService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/ExciterAPIService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/MeasurementApiService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/SavedSearchApiService.wsdl</wsdl>
+								<wsdl>${basedir}/src/main/resources/wsdl/ImageAPIService.wsdl</wsdl>
+							</wsdlOption>
+						</wsdlOptions>
+					</configuration>
+					<goals>
+						<goal>wsdl2java</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+
+		<plugin>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<configuration>
+				<source>1.5</source>
+				<target>1.5</target>
+			</configuration>
+		</plugin>
+		
+		<!-- Copy the resulting jar to the package/lib folder -->
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-jar-plugin</artifactId>
+			<configuration>
+				<outputDirectory>
+					${project.build.directory}/${project.name}
+				</outputDirectory>
+				<archive>
+					<manifest>
+						<addDefaultImplementationEntries>
+							true
+						</addDefaultImplementationEntries>
+						<addClasspath>true</addClasspath>
+						<mainClass>
+							com.aeroscout.mobileview.proxy.VerifyVersion
+						</mainClass>
+					</manifest>
+
+					<manifestEntries>
+						<Implementation-Version>
+							${project.version}.${mvMinorVersion}
+						</Implementation-Version>
+					</manifestEntries>
+				</archive>
+
+				<excludes>
+					<exclude>wsdl/*.bat</exclude>
+					<exclude>wsdl/*.exe</exclude>
+					<exclude>*.DONE</exclude>
+				</excludes>
+			</configuration>
+			<executions>
+				<execution>
+					<phase>package</phase>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+				</execution>
+
+			</executions>
+		</plugin>
+		
+		<!-- Copy dependency to package/lib folder -->
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-dependency-plugin</artifactId>
+			<executions>
+				<execution>
+					<id>copy-dependencies</id>
+					<phase>package</phase>
+					<goals>
+						<goal>copy-dependencies</goal>
+					</goals>
+					<configuration>
+						<outputDirectory>
+							${project.build.directory}/${project.name}/lib
+						</outputDirectory>
+						<overWriteReleases>false</overWriteReleases>
+						<overWriteSnapshots>
+							false
+						</overWriteSnapshots>
+						<overWriteIfNewer>true</overWriteIfNewer>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+
+
+
+		<!-- Copy Run batch file to package folder -->
+		<plugin>
+			<artifactId>maven-antrun-plugin</artifactId>
+			<executions>
+				<execution>
+					<phase>package</phase>
+					<configuration>
+						<tasks>
+							<echo message="Copy Batch file" />
+							<copy
+								todir="${project.build.directory}/${project.name}">
+								<fileset dir="src/main">
+									<include name="*.bat" />
+								</fileset>
+							</copy>
+						</tasks>
+					</configuration>
+					<goals>
+						<goal>run</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+
+	</plugins>
+	</build>
+  
+</project>
